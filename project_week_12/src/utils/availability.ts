@@ -18,6 +18,10 @@ export function checkAvailability(
   rooms: Room[],
   bookings: Booking[],
 ): AvailabilityResult {
+  // Input contract (AV-01, AV-02): whole minutes only, current time within the day
+  if (![start, end, currentTime].every((v) => Number.isInteger(v)) || currentTime < 0 || currentTime > MINUTES_IN_DAY) {
+    return { status: "invalid", message: "Times must be whole minutes within 0 to 1440.", reason: "invalid_time" };
+  }
   // AC1: valid interval and start after current time
   if (start < 0 || end > MINUTES_IN_DAY) {
     return { status: "invalid", message: "Interval must stay within 0 to 1440 minutes.", reason: "invalid_time" };

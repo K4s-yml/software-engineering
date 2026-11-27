@@ -176,3 +176,22 @@ describe("checkAvailability", () => {
     }
   });
 });
+
+describe("checkAvailability input contract (AV-01, AV-02)", () => {
+  it("rejects a fractional start", () => {
+    const r = checkAvailability(660.5, 720, CURRENT_TIME, "r1", makeRooms(), makeBookings());
+    expect(r.status).toBe("invalid");
+  });
+  it("rejects a fractional end", () => {
+    const r = checkAvailability(700, 760.5, CURRENT_TIME, "r1", makeRooms(), makeBookings());
+    expect(r.status).toBe("invalid");
+  });
+  it.each([-1, 1441, 540.5, NaN])("rejects invalid current time %s", (cur) => {
+    const r = checkAvailability(700, 760, cur, "r1", makeRooms(), makeBookings());
+    expect(r.status).toBe("invalid");
+  });
+  it("still accepts whole-minute input", () => {
+    const r = checkAvailability(660, 720, CURRENT_TIME, "r1", makeRooms(), makeBookings());
+    expect(r.status).toBe("available");
+  });
+});
